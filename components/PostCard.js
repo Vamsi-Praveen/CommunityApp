@@ -14,7 +14,7 @@ const PostCard = ({ border, data }) => {
                     </TouchableOpacity>
                 </View>
                 <View style={{ flex: 1 }}>
-                    <Pressable onPress={() => { navigation.navigate('PostDetails') }}>
+                    <Pressable onPress={() => { navigation.navigate('PostDetails', { data: data }) }}>
                         <View style={{ flexDirection: 'row', marginBottom: 3, alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' }}>
                                 <Text style={styles.name}>Vamsi</Text>
@@ -30,16 +30,20 @@ const PostCard = ({ border, data }) => {
                             </TouchableOpacity>
                         </View>
                         <View>
-                            <Text style={styles.description}>Hi guys, i am facing issue in the react native expo app i am setting the authencation here i need to setup the authentication i need to crete and delete the issue thank you.</Text>
+                            {/* <Text style={styles.description}>Hi guys, i am facing issue in the react native expo app i am setting the authencation here i need to setup the authentication i need to crete and delete the issue thank you.</Text> */}
+                            <Text style={styles.description}>{data?.description}</Text>
                         </View>
                         <View>
-                            <Image source={require('../assets/images/thread.png')} style={styles.postImage} />
+                            {
+                                data?.image &&
+                                <Image source={{ uri: data?.image }} style={styles.postImage} />
+                            }
                         </View>
                     </Pressable>
                     <View style={styles.icons}>
                         <TouchableOpacity style={[styles.icon, styles.btn]}>
                             <Octicons name="heart" color={"#BBBBBB"} size={22} />
-                            <Text style={styles.iconText}>0</Text>
+                            <Text style={styles.iconText}>{data?.likes?.length}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.icon, styles.btn]}>
                             <Ionicons name="chatbubble-outline" color={"#BBBBBB"} size={22} />

@@ -13,8 +13,18 @@ export const createPost = async (data) => {
 
 export const getAllPosts = async () => {
     try {
+        const posts = []
         const q = query(collection(DB, COLLECTION_NAME), orderBy("date", "desc"))
-        return getDocs(q)
+        const allPosts = await getDocs(q)
+        allPosts.forEach((doc) => {
+            const data = doc.data()
+            tempData = {
+                id: doc.id,
+                ...data
+            }
+            posts.push(tempData)
+        })
+        return posts
     } catch (error) {
         console.log(error)
     }

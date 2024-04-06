@@ -3,8 +3,9 @@ import React from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { AntDesign, Ionicons, MaterialIcons, Octicons } from "react-native-vector-icons"
 import Wrapper from './Wrapper'
-const PostDetails = ({ data }) => {
+const PostDetails = ({ route }) => {
     const navigation = useNavigation()
+    const { data } = route.params
     return (
         <Wrapper>
             <ScrollView
@@ -40,14 +41,16 @@ const PostDetails = ({ data }) => {
                     </View>
                 </View >
                 <View style={{ paddingHorizontal: 10 }}>
-                    <Text style={styles.description}>Hi guys, i am facing issue in the react native expo app i am setting the authencation here i need to setup the authentication i need to crete and delete the issue thank you.</Text>
+                    <Text style={styles.description}>{data?.description}</Text>
                     <View style={{ marginBottom: 10 }}>
-                        <Image source={require('../assets/images/thread.png')} style={styles.postImage} />
+                        {
+                            data?.image && <Image source={{ uri: data?.image }} style={styles.postImage} />
+                        }
                     </View>
                     <View style={styles.icons}>
                         <TouchableOpacity style={[styles.icon, styles.btn]}>
                             <Octicons name="heart" color={"#BBBBBB"} size={22} />
-                            <Text style={styles.iconText}>0</Text>
+                            <Text style={styles.iconText}>{data?.likes.length}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.icon, styles.btn]}>
                             <Ionicons name="chatbubble-outline" color={"#BBBBBB"} size={22} />

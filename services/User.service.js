@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { AUTH } from "../config/firebaseConfig";
 import { DB } from "../config/firebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 
 export const login = async (email, password) => {
@@ -38,5 +38,16 @@ export const register = async (data) => {
     } catch (error) {
         console.log(error)
         return error
+    }
+}
+
+
+export const getUser = async (userId) => {
+    try {
+        const docRef = doc(DB, "users", userId);
+        const userData = await getDoc(docRef)
+        return userData.data()
+    } catch (error) {
+        console.log(error)
     }
 }

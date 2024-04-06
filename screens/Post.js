@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import Wrapper from './Wrapper'
 import { Ionicons, Octicons } from "react-native-vector-icons"
 import { useNavigation } from '@react-navigation/native'
+import { getAllPosts } from '../services/Post.service'
+import { getUser } from '../services/User.service'
 
 const Post = () => {
   const navigation = useNavigation()
@@ -27,6 +29,8 @@ const Post = () => {
       comments: [],
       userId: userId
     }
+    const data = await getAllPosts()
+    console.log(data)
   }
   return (
     <Wrapper>
