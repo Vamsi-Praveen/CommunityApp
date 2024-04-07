@@ -1,10 +1,29 @@
 import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Octicons, AntDesign, Ionicons, MaterialIcons } from "react-native-vector-icons"
 import { useNavigation } from '@react-navigation/native'
+import { updateLikes } from '../services/Post.service'
 
 const PostCard = ({ border, data }) => {
     const navigation = useNavigation()
+    const [likes, setLikes] = useState({
+        likes: data?.likes.length,
+        isLiked: data?.likes?.includes('user_id') ? true : false
+    })
+    const handleLikes = async (isLiked) => {
+        setLikes({
+            likes: isLiked ? likes.likes + 1 : likes.likes - 1,
+            isLiked: !likes.isLiked
+        })
+        if (isLiked) {
+            data?.likes?.push('user_id')
+        }
+        else {
+            data?.likes?.splice(data?.likes?.indexOf('user_id'), 1)
+        }
+
+        await updateLikes(data?.likes, data.id)
+    }
     return (
         <View style={[styles.container, border && styles.border]}>
             <View style={{ flexDirection: 'row', gap: 15 }}>
@@ -31,7 +50,10 @@ const PostCard = ({ border, data }) => {
                         </View>
                         <View>
                             {/* <Text style={styles.description}>Hi guys, i am facing issue in the react native expo app i am setting the authencation here i need to setup the authentication i need to crete and delete the issue thank you.</Text> */}
-                            <Text style={styles.description}>{data?.description}</Text>
+                            {
+                                data?.description != '' &&
+                                <Text style={styles.description}>{data?.description}</Text>
+                            }
                         </View>
                         <View>
                             {
@@ -41,9 +63,11 @@ const PostCard = ({ border, data }) => {
                         </View>
                     </Pressable>
                     <View style={styles.icons}>
-                        <TouchableOpacity style={[styles.icon, styles.btn]}>
-                            <Octicons name="heart" color={"#BBBBBB"} size={22} />
-                            <Text style={styles.iconText}>{data?.likes?.length}</Text>
+                        <TouchableOpacity style={[styles.icon, styles.btn]} onPress={() => { handleLikes(!likes.isLiked) }}>
+                            {
+                                likes.isLiked ? <Octicons name="heart-fill" color={"#BBBBBB"} size={22} /> : <Octicons name="heart" color={"#BBBBBB"} size={22} />
+                            }
+                            <Text style={styles.iconText}>{likes.likes}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.icon, styles.btn]}>
                             <Ionicons name="chatbubble-outline" color={"#BBBBBB"} size={22} />

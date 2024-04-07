@@ -1,5 +1,6 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
-import { DB } from "../config/firebaseConfig";
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { DB, STORAGE } from "../config/firebaseConfig";
 
 const COLLECTION_NAME = "posts"
 
@@ -70,6 +71,32 @@ export const getSinglePost = async (postId) => {
 export const userPosts = async (userId) => {
     try {
         const q = query()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+export const uploadImage = async (image) => {
+    try {
+        const imageRef = ref(STORAGE, 'uploads/' + new Date().toISOString())
+        const response = await fetch(image);
+        const blob = await response.blob();
+        await uploadBytes(imageRef, blob);
+        const downloadURL = await getDownloadURL(imageRef)
+        return downloadURL
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const updateLikes = async (likes, id) => {
+    try {
+        const docref = doc(DB, "posts", id)
+        await updateDoc(docref, {
+            likes: likes
+        })
     } catch (error) {
         console.log(error)
     }

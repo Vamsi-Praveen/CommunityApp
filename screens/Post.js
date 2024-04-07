@@ -1,10 +1,10 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
-import Wrapper from './Wrapper'
-import { Ionicons, Octicons } from "react-native-vector-icons"
 import { useNavigation } from '@react-navigation/native'
-import { getAllPosts } from '../services/Post.service'
-import { getUser } from '../services/User.service'
+import * as DocumentPicker from 'expo-document-picker'
+import React, { useState } from 'react'
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Ionicons, Octicons } from "react-native-vector-icons"
+import { createPost, uploadImage } from '../services/Post.service'
+import Wrapper from './Wrapper'
 
 const Post = () => {
   const navigation = useNavigation()
@@ -20,17 +20,47 @@ const Post = () => {
   }
   const [description, setDesscription] = useState('')
   const [image, setImage] = useState(null)
-  const [userId, setUserId] = useState('')
+  const [userId, setUserId] = useState('Noz3fhvyO7XfOL8z56a0Zl1YXIt1')
   const handlePost = async () => {
+    if (image) {
+      const imageURL = await uploadImage(image)
+      const post = {
+        description: description,
+        image: imageURL,
+        likes: [],
+        comments: [],
+        userId: userId,
+        date: new Date().toISOString()
+      }
+      await createPost(post)
+      return navigation.navigate('Home')
+    }
     const post = {
       description: description,
-      image: image,
+      image: null,
       likes: [],
       comments: [],
-      userId: userId
+      userId: userId,
+      date: new Date().toISOString()
     }
-    const data = await getAllPosts()
-    console.log(data)
+    await createPost(post)
+    return navigation.navigate('Home')
+  }
+  const handleImage = async () => {
+    try {
+      const image = await DocumentPicker.getDocumentAsync({
+        type: 'image/*',
+      })
+      //if image is fetched succesfully we need to take uri and store for displaying
+      if (!image.canceled) {
+        if (image?.assets[0]?.uri) {
+          setImage(image?.assets?.[0]?.uri)
+        }
+      }
+
+    } catch (err) {
+      console.log(err)
+    }
   }
   return (
     <Wrapper>
@@ -39,7 +69,7 @@ const Post = () => {
           <Ionicons name="close" size={28} color="white" />
         </TouchableOpacity>
         <View>
-          <TouchableOpacity style={styles.button} onPress={handlePost}>
+          <TouchableOpacity style={image || description != '' ? styles.button : styles.buttonActive} onPress={handlePost}>
             <Text style={styles.text}>Post</Text>
           </TouchableOpacity>
         </View>
@@ -59,12 +89,23 @@ const Post = () => {
               placeholderTextColor={"#BBBBBb"}
               multiline
               onContentSizeChange={(e) => handleInputHeight(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)}
+              onChangeText={(value) => { setDesscription(value) }}
             />
           </View>
         </View>
       </View >
-      <View style={{ marginTop: 20, paddingHorizontal: 15 }}>
+      <TouchableOpacity style={{ marginTop: 20, paddingHorizontal: 15 }} onPress={handleImage}>
         <Octicons name="image" size={25} color={"#BBBBBB"} />
+      </TouchableOpacity>
+      <View style={{ marginTop: 15 }}>
+        {
+          image && <>
+            <Image source={{ uri: image }} style={styles.image} />
+            <TouchableOpacity style={styles.closeBtn} onPress={() => { setImage(null) }}>
+              <Ionicons name="close" size={20} color={'white'} />
+            </TouchableOpacity>
+          </>
+        }
       </View>
     </Wrapper >
   )
@@ -78,7 +119,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingVertical: 10,
     borderRadius: 20
-  }, text: {
+  },
+  buttonActive: {
+    pointerEvents: 'none',
+    backgroundColor: '#c0d0eb80',
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: 20
+  },
+  text: {
     fontFamily: 'DmSans',
     color: "black",
     fontSize: 18
@@ -95,5 +144,22 @@ const styles = StyleSheet.create({
     color: '#BBBBBB',
     fontSize: 18,
     paddingLeft: 5,
+  },
+  image: {
+    width: '100%',
+    height: 400,
+    borderRadius: 12,
+    position: 'relative'
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 5,
+    top: 5,
+    zIndex: 10,
+    padding: 2,
+    borderColor: '#454343',
+    borderRadius: 100,
+    borderWidth: 1,
+    backgroundColor: '#454343'
   }
 })
