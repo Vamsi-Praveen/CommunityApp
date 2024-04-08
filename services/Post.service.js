@@ -1,6 +1,7 @@
 import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { DB, STORAGE } from "../config/firebaseConfig";
+import { getUser } from "./User.service";
 
 const COLLECTION_NAME = "posts"
 
@@ -12,24 +13,57 @@ export const createPost = async (data) => {
     }
 }
 
+// export const getAllPosts = async () => {
+//     try {
+//         const posts = []
+//         const q = query(collection(DB, COLLECTION_NAME), orderBy("date", "desc"))
+//         const allPosts = await getDocs(q)
+//         allPosts.docs.map(async (doc) => {
+//             const data = doc.data()
+//             const userData = await getUser(data.userId)
+//             tempData = {
+//                 id: doc.id,
+//                 username: userData?.username,
+//                 fullName: userData?.fullName,
+//                 isVerified: userData?.isVerified,
+//                 ...data
+
+//             }
+//             posts.push(tempData)
+//         })
+//         return posts
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
+
+
 export const getAllPosts = async () => {
     try {
-        const posts = []
-        const q = query(collection(DB, COLLECTION_NAME), orderBy("date", "desc"))
-        const allPosts = await getDocs(q)
-        allPosts.forEach((doc) => {
-            const data = doc.data()
-            tempData = {
+        const posts = [];
+        const q = query(collection(DB, COLLECTION_NAME), orderBy("date", "desc"));
+        const allPosts = await getDocs(q);
+        const postPromises = allPosts.docs.map(async (doc) => {
+            const data = doc.data();
+            const userData = await getUser(data.userId);
+            const tempData = {
                 id: doc.id,
+                username: userData?.username,
+                fullName: userData?.fullName,
+                isVerified: userData?.isVerified,
+                avatar: userData?.avatar,
                 ...data
-            }
-            posts.push(tempData)
-        })
-        return posts
+            };
+            return tempData;
+        });
+        posts.push(...(await Promise.all(postPromises)));
+        return posts;
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        return [];
     }
 }
+
 
 export const getSinglePost = async (postId) => {
     try {

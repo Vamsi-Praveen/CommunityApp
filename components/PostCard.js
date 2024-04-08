@@ -3,12 +3,14 @@ import React, { useState } from 'react'
 import { Octicons, AntDesign, Ionicons, MaterialIcons } from "react-native-vector-icons"
 import { useNavigation } from '@react-navigation/native'
 import { updateLikes } from '../services/Post.service'
+import { useSelector } from "react-redux"
 
 const PostCard = ({ border, data }) => {
     const navigation = useNavigation()
+    const userId = useSelector((state) => state.auth.userId)
     const [likes, setLikes] = useState({
         likes: data?.likes.length,
-        isLiked: data?.likes?.includes('user_id') ? true : false
+        isLiked: data?.likes?.includes(userId) ? true : false
     })
     const handleLikes = async (isLiked) => {
         setLikes({
@@ -16,10 +18,10 @@ const PostCard = ({ border, data }) => {
             isLiked: !likes.isLiked
         })
         if (isLiked) {
-            data?.likes?.push('user_id')
+            data?.likes?.push(userId)
         }
         else {
-            data?.likes?.splice(data?.likes?.indexOf('user_id'), 1)
+            data?.likes?.splice(data?.likes?.indexOf(userId), 1)
         }
 
         await updateLikes(data?.likes, data.id)
@@ -28,20 +30,28 @@ const PostCard = ({ border, data }) => {
         <View style={[styles.container, border && styles.border]}>
             <View style={{ flexDirection: 'row', gap: 15 }}>
                 <View>
-                    <TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
-                        <Image source={require('../assets/images/vamsi.jpg')} style={styles.avatar} />
-                    </TouchableOpacity>
+                    {
+                        data?.avatar ? (<TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
+                            <Image source={{ uri: data?.avatar }} style={styles.avatar} />
+                        </TouchableOpacity>) : (
+                            <TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
+                                <View style={[styles.avatar, { alignItems: 'center', justifyContent: 'center', backgroundColor: 'skyblue' }]}>
+                                    <Text style={{ color: 'black', fontSize: 20, fontFamily: 'DmSans-B' }}>{data?.fullName.split('')[0]}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }
+
                 </View>
                 <View style={{ flex: 1 }}>
                     <Pressable onPress={() => { navigation.navigate('PostDetails', { data: data }) }}>
                         <View style={{ flexDirection: 'row', marginBottom: 3, alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={styles.name}>Vamsi</Text>
-                                <Text style={styles.username}>@vamsi_nakka</Text>
+                                <Text style={styles.name}>{data?.fullName.split(' ')[0]}</Text>
+                                <Text style={styles.username}>@{data?.username}</Text>
                                 {
-                                    data?.isVerified && <Octicons name="verified" color={"#bbbb"} size={22} />
+                                    data?.isVerified && <Octicons name="verified" color={"#bbbb"} size={18} />
                                 }
-                                <Octicons name="verified" color={"#bbbb"} size={18} />
                                 <Text style={styles.time}>2d</Text>
                             </View>
                             <TouchableOpacity style={styles.btn}>

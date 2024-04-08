@@ -22,6 +22,7 @@ const HomeScreen = () => {
     const fetchPosts = async () => {
         setLoading(true)
         const posts = await getAllPosts()
+        console.log(posts)
         setPost(posts)
         setLoading(false)
     }

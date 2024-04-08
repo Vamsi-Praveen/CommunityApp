@@ -5,6 +5,7 @@ import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import { Ionicons, Octicons } from "react-native-vector-icons"
 import { createPost, uploadImage } from '../services/Post.service'
 import Wrapper from './Wrapper'
+import { useSelector } from 'react-redux'
 
 const Post = () => {
   const navigation = useNavigation()
@@ -20,7 +21,7 @@ const Post = () => {
   }
   const [description, setDesscription] = useState('')
   const [image, setImage] = useState(null)
-  const [userId, setUserId] = useState('Noz3fhvyO7XfOL8z56a0Zl1YXIt1')
+  const userId = useSelector((state) => state.auth.userId)
   const handlePost = async () => {
     if (image) {
       const imageURL = await uploadImage(image)

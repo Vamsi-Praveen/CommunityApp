@@ -4,12 +4,9 @@ import { DB } from "../config/firebaseConfig";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 
-export const login = async (email, password) => {
+export const loginUser = async (email, password) => {
     try {
-        await signInWithEmailAndPassword(AUTH, email, password)
-            .then((user) => {
-                return user
-            })
+        return await signInWithEmailAndPassword(AUTH, email, password)
     } catch (error) {
         console.log(error)
         return error

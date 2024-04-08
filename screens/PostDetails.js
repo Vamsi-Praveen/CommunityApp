@@ -3,12 +3,16 @@ import React, { useState } from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { AntDesign, Ionicons, MaterialIcons, Octicons } from "react-native-vector-icons"
 import Wrapper from './Wrapper'
+import { updateLikes } from '../services/Post.service'
+import { useSelector } from "react-redux"
+
 const PostDetails = ({ route }) => {
     const navigation = useNavigation()
     const { data } = route.params
+    const userId = useSelector((state) => state.auth.userId)
     const [likes, setLikes] = useState({
         likes: data?.likes.length,
-        isLiked: data?.likes?.includes('user_id') ? true : false
+        isLiked: data?.likes?.includes(userId) ? true : false
     })
     const handleLikes = async (isLiked) => {
         setLikes({
@@ -16,10 +20,10 @@ const PostDetails = ({ route }) => {
             isLiked: !likes.isLiked
         })
         if (isLiked) {
-            data?.likes?.push('user_id')
+            data?.likes?.push(userId)
         }
         else {
-            data?.likes?.splice(data?.likes?.indexOf('user_id'), 1)
+            data?.likes?.splice(data?.likes?.indexOf(userId), 1)
         }
 
         await updateLikes(data?.likes, data.id)
@@ -45,10 +49,12 @@ const PostDetails = ({ route }) => {
                         </View>
                         <View style={{ flexDirection: 'row', gap: 15, alignItems: 'center' }}>
                             <View>
-                                <Text style={styles.name}>Vamsi</Text>
-                                <Text style={styles.username}>@vamsi_nakka</Text>
+                                <Text style={styles.name}>{data?.fullName.split(' ')[0]}</Text>
+                                <Text style={styles.username}>@{data?.username}</Text>
                             </View>
-                            <Octicons name="verified" color={"#bbbb"} size={18} />
+                            {
+                                data?.isVerified && <Octicons name="verified" color={"#bbbb"} size={18} />
+                            }
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
