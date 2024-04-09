@@ -73,7 +73,7 @@ const Login = () => {
                     </View>
                 }
                 <TouchableOpacity style={{ backgroundColor: 'skyblue', width: '90%', alignItems: 'center', justifyContent: 'center', paddingVertical: 15, marginTop: 20, borderRadius: 2 }}
-                    onPress={handleLogin}
+                    onPress={handleLogin} disabled={loading}
                 >
                     {
                         loading ? <ActivityIndicator color={'black'} size={25} /> :

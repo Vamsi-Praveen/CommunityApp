@@ -22,6 +22,7 @@ const Post = () => {
   const [description, setDesscription] = useState('')
   const [image, setImage] = useState(null)
   const userId = useSelector((state) => state.auth.userId)
+  const details = useSelector((state) => state.auth.details)
   const handlePost = async () => {
     if (image) {
       const imageURL = await uploadImage(image)
@@ -80,7 +81,13 @@ const Post = () => {
           flexDirection: 'row', gap: 15
         }}>
           <View>
-            < Image source={require('../assets/images/vamsi.jpg')} style={styles.avatar} />
+            {
+              details?.avatar ? <Image source={{ uri: details?.avatar }} style={styles.avatar} />
+                :
+                <View style={[styles.avatar, { backgroundColor: 'skyblue', alignItems: 'center', justifyContent: 'center' }]}>
+                  <Text style={{ fontSize: 24, fontFamily: 'DmSans', color: 'black' }}>{details?.fullName?.split('')[0]}</Text>
+                </View>
+            }
           </View>
           <View style={{ flex: 1, marginTop: -5 }}>
             <TextInput

@@ -15,7 +15,7 @@ const Tabs = () => {
             <Tab.Screen name="Home" component={HomeScreen} options={{
                 tabBarIcon: ({ focused, color }) => {
                     if (focused) {
-                        return <Octicons name="home" size={24} color={color} />
+                        return <Octicons name="home" size={24} color={'skyblue'} />
                     }
                     return <Octicons name="home" size={24} color={color} />
                 },
@@ -23,7 +23,7 @@ const Tabs = () => {
             <Tab.Screen name="Search" component={HomeScreen} options={{
                 tabBarIcon: ({ focused, color }) => {
                     if (focused) {
-                        return <Octicons name="search" size={24} color={color} />
+                        return <Octicons name="search" size={24} color={'skyblue'} />
                     }
                     return <Octicons name="search" size={24} color={color} />
                 },
@@ -33,7 +33,7 @@ const Tabs = () => {
                     tabBarStyle: { display: 'none' },
                     tabBarIcon: ({ focused, color }) => {
                         if (focused) {
-                            return <Ionicons name="add-circle-outline" size={28} color={color} />
+                            return <Ionicons name="add-circle-outline" size={28} color={'skyblue'} />
                         }
                         return <Ionicons name="add-circle-outline" size={28} color={color} />
                     }
@@ -41,15 +41,16 @@ const Tabs = () => {
             <Tab.Screen name="Notification" component={Notification} options={{
                 tabBarIcon: ({ focused, color }) => {
                     if (focused) {
-                        return <Ionicons name="notifications-outline" size={24} color={color} />
+                        return <Ionicons name="notifications-outline" size={24} color={'skyblue'} />
                     }
                     return <Ionicons name="notifications-outline" size={24} color={color} />
                 }
             }} />
             <Tab.Screen name="Profile" component={Profile} options={{
+                tabBarStyle: { display: 'none' },
                 tabBarIcon: ({ focused, color }) => {
                     if (focused) {
-                        return <AntDesign name="user" size={24} color={color} />
+                        return <AntDesign name="user" size={24} color={'skyblue'} />
                     }
                     return <AntDesign name="user" size={24} color={color} />
                 }

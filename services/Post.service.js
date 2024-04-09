@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { DB, STORAGE } from "../config/firebaseConfig";
 import { getUser } from "./User.service";
@@ -104,7 +104,14 @@ export const getSinglePost = async (postId) => {
 
 export const userPosts = async (userId) => {
     try {
-        const q = query()
+        const q = query(collection(DB, COLLECTION_NAME), where('userId', '==', userId))
+        const posts = await getDocs(q)
+        const userPosts = []
+        posts.docs.map((doc) => {
+            const data = doc.data()
+            userPosts.push(data)
+        })
+        return userPosts
     } catch (error) {
         console.log(error)
     }

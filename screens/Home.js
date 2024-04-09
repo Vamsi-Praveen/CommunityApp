@@ -22,7 +22,6 @@ const HomeScreen = () => {
     const fetchPosts = async () => {
         setLoading(true)
         const posts = await getAllPosts()
-        console.log(posts)
         setPost(posts)
         setLoading(false)
     }
@@ -34,7 +33,7 @@ const HomeScreen = () => {
             {
                 loading ? (
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
-                        <ActivityIndicator size={24} color={'white'} />
+                        <ActivityIndicator size={24} color={'skyblue'} />
                     </View>
                 ) : (
                     <FlatList

@@ -9,7 +9,7 @@ const PostCard = ({ border, data }) => {
     const navigation = useNavigation()
     const userId = useSelector((state) => state.auth.userId)
     const [likes, setLikes] = useState({
-        likes: data?.likes?.length,
+        likes: data?.likes.length,
         isLiked: data?.likes?.includes(userId) ? true : false
     })
     const handleLikes = async (isLiked) => {
@@ -31,23 +31,22 @@ const PostCard = ({ border, data }) => {
             <View style={{ flexDirection: 'row', gap: 15 }}>
                 <View>
                     {
-                        data?.avatar ? (<TouchableOpacity onPress={() => { navigation.navigate('UserProfile', { userId: data?.userId }) }}>
+                        data?.avatar ? (<TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
                             <Image source={{ uri: data?.avatar }} style={styles.avatar} />
                         </TouchableOpacity>) : (
-                            <TouchableOpacity onPress={() => { navigation.navigate('UserProfile', { userId: userId }) }}>
+                            <TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
                                 <View style={[styles.avatar, { alignItems: 'center', justifyContent: 'center', backgroundColor: 'skyblue' }]}>
-                                    <Text style={{ color: 'black', fontSize: 20, fontFamily: 'DmSans-B' }}>{data?.fullName?.split('')[0]}</Text>
+                                    <Text style={{ color: 'black', fontSize: 20, fontFamily: 'DmSans-B' }}>{data?.fullName.split('')[0]}</Text>
                                 </View>
                             </TouchableOpacity>
                         )
                     }
-
                 </View>
                 <View style={{ flex: 1 }}>
                     <Pressable onPress={() => { navigation.navigate('PostDetails', { data: data }) }}>
                         <View style={{ flexDirection: 'row', marginBottom: 3, alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={styles.name}>{data?.fullName?.split(' ')[0]}</Text>
+                                <Text style={styles.name}>{data?.fullName.split(' ')[0]}</Text>
                                 <Text style={styles.username}>@{data?.username}</Text>
                                 {
                                     data?.isVerified && <Octicons name="verified" color={"#bbbb"} size={18} />

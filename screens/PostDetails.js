@@ -43,9 +43,18 @@ const PostDetails = ({ route }) => {
                         flexDirection: 'row', alignItems: 'center', gap: 10
                     }}>
                         <View>
-                            <TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
-                                < Image source={require('../assets/images/vamsi.jpg')} style={styles.avatar} />
-                            </TouchableOpacity>
+                            {
+                                data?.avatar ? (<TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
+                                    <Image source={{ uri: data?.avatar }} style={styles.avatar} />
+                                </TouchableOpacity>) : (
+                                    <TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
+                                        <View style={[styles.avatar, { alignItems: 'center', justifyContent: 'center', backgroundColor: 'skyblue' }]}>
+                                            <Text style={{ color: 'black', fontSize: 20, fontFamily: 'DmSans-B' }}>{data?.fullName.split('')[0]}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                )
+                            }
+
                         </View>
                         <View style={{ flexDirection: 'row', gap: 15, alignItems: 'center' }}>
                             <View>
