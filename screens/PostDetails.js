@@ -4,12 +4,14 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { AntDesign, Ionicons, MaterialIcons, Octicons } from "react-native-vector-icons"
 import Wrapper from './Wrapper'
 import { updateLikes } from '../services/Post.service'
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
+import { addLike, removeLike } from '../redux/postSlice'
 
 const PostDetails = ({ route }) => {
     const navigation = useNavigation()
     const { data } = route.params
     const userId = useSelector((state) => state.auth.userId)
+    const dispatch = useDispatch()
     const [likes, setLikes] = useState({
         likes: data?.likes.length,
         isLiked: data?.likes?.includes(userId) ? true : false
@@ -20,9 +22,11 @@ const PostDetails = ({ route }) => {
             isLiked: !likes.isLiked
         })
         if (isLiked) {
+            // dispatch(addLike({ postId: data.id, userID: userId }))
             data?.likes?.push(userId)
         }
         else {
+            // dispatch(removeLike({ postId: data.id, userID: userId }))
             data?.likes?.splice(data?.likes?.indexOf(userId), 1)
         }
 
@@ -44,10 +48,10 @@ const PostDetails = ({ route }) => {
                     }}>
                         <View>
                             {
-                                data?.avatar ? (<TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
+                                data?.avatar ? (<TouchableOpacity onPress={() => { data?.userId === userId ? navigation.navigate('Profile') : navigation.navigate('UserProfile', { userId: data?.userId }) }}>
                                     <Image source={{ uri: data?.avatar }} style={styles.avatar} />
                                 </TouchableOpacity>) : (
-                                    <TouchableOpacity onPress={() => { navigation.navigate('UserProfile') }}>
+                                    <TouchableOpacity onPress={() => { data?.userId === userId ? navigation.navigate('Profile') : navigation.navigate('UserProfile', { userId: data?.userId }) }}>
                                         <View style={[styles.avatar, { alignItems: 'center', justifyContent: 'center', backgroundColor: 'skyblue' }]}>
                                             <Text style={{ color: 'black', fontSize: 20, fontFamily: 'DmSans-B' }}>{data?.fullName.split('')[0]}</Text>
                                         </View>

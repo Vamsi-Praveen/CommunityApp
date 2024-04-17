@@ -3,10 +3,13 @@ import React, { useEffect, useState } from 'react'
 import Wrapper from './Wrapper'
 import PostCard from '../components/PostCard'
 import { getAllPosts } from '../services/Post.service'
+import { useDispatch, useSelector } from "react-redux"
+import { selectPosts, setPostData } from '../redux/postSlice'
 
 const HomeScreen = () => {
     const [refreshing, setRefreshing] = useState(false)
     const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch()
     const onRefresh = async () => {
         setRefreshing(true)
         try {
@@ -18,20 +21,22 @@ const HomeScreen = () => {
             setRefreshing(false)
         }
     }
-    const [posts, setPost] = useState([])
+    const [posts, setPosts] = useState([])
     const fetchPosts = async () => {
         setLoading(true)
         const posts = await getAllPosts()
-        setPost(posts)
+        // dispatch(setPostData({ posts: posts }))
+        setPosts(posts)
         setLoading(false)
     }
     useEffect(() => {
         fetchPosts()
     }, [])
+    // const posts = useSelector(selectPosts) ?? []
     return (
         <Wrapper>
             {
-                loading ? (
+                loading || posts.length == 0 ? (
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
                         <ActivityIndicator size={24} color={'skyblue'} />
                     </View>

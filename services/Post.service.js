@@ -133,10 +133,26 @@ export const uploadImage = async (image) => {
 }
 
 export const updateLikes = async (likes, id) => {
+    console.log(likes)
     try {
         const docref = doc(DB, "posts", id)
         await updateDoc(docref, {
             likes: likes
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+export const updateSavedPosts = async (userId, posts) => {
+    try {
+        const userRef = doc(DB, 'users', userId)
+        const savedPosts = (await getDoc(userRef)).data()
+        const allPosts = [...savedPosts?.savedPosts, posts];
+        console.log("allposts", allPosts)
+        await updateDoc(userRef, {
+            savedPosts: allPosts
         })
     } catch (error) {
         console.log(error)

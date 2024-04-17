@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Octicons } from 'react-native-vector-icons'
 import PostCard from "../components/PostCard"
 import { userPosts } from "../services/Post.service"
@@ -14,24 +14,21 @@ const UserProfile = ({ route }) => {
     const [loading, setLoading] = useState(false)
     const [details, setDetails] = useState([])
 
-    useEffect(() => {
+    const fetchUserAndPosts = async () => {
         setLoading(true)
-        const fetchUser = async () => {
-            const details = await getUser(userId)
-            setDetails(details)
-            await fetchPosts()
-        }
-        const fetchPosts = async () => {
-            // console.log(details)
-            const userposts = await userPosts(userId)
-            const postsData = userposts?.map((post) => {
-                return { ...post, ...details } ?? {}
-            })
-            console.log(postsData[0])
-            setPosts(postsData)
-            setLoading(false)
-        }
-        fetchUser()
+        const details = await getUser(userId)
+        setDetails(details)
+        const userposts = await userPosts(userId)
+        const postsData = userposts?.map((post) => {
+            const newDetails = { ...post, ...details }
+            return newDetails ?? {}
+        })
+        console.log("post Details of user is: ", postsData)
+        setPosts(postsData)
+        setLoading(false)
+    }
+    useEffect(() => {
+        fetchUserAndPosts()
     }, []);
     const getDisplayName = () => {
         return details?.fullName?.split(' ').map((e) => {
@@ -40,7 +37,10 @@ const UserProfile = ({ route }) => {
     }
     return (
         <Wrapper>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl onRefresh={fetchUserAndPosts} refreshing={loading} />}
+
+            >
                 <View style={{ height: 200, position: 'relative' }}>
                     <View style={{ backgroundColor: 'skyblue', height: '75%' }}>
                         <View style={{ flexDirection: 'row', paddingTop: 10, paddingHorizontal: 6, justifyContent: 'space-between' }}>

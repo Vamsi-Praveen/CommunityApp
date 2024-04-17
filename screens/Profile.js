@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Octicons } from 'react-native-vector-icons'
 import { useSelector } from "react-redux"
 import PostCard from "../components/PostCard"
@@ -12,6 +12,7 @@ const Profile = () => {
   const details = useSelector((state) => state.auth.details)
   const userId = useSelector((state) => state.auth.userId)
   const [posts, setPosts] = useState([])
+  const [refreshing, setRefreshing] = useState(false)
   const [loading, setLoading] = useState(false)
   const getDisplayName = () => {
     return details?.fullName.split(' ').map((e) => {
@@ -19,21 +20,25 @@ const Profile = () => {
     })
 
   }
-  useEffect(() => {
+  const fetchPosts = async () => {
     setLoading(true)
-    const fetchPosts = async () => {
-      const userposts = await userPosts(userId)
-      const postsData = userposts.map((post) => {
-        return { ...post, ...details }
-      })
-      setPosts(postsData)
-      setLoading(false)
-    }
+    setRefreshing(true)
+    const userposts = await userPosts(userId)
+    const postsData = userposts.map((post) => {
+      return { ...post, ...details }
+    })
+    setPosts(postsData)
+    setLoading(false)
+    setRefreshing(false)
+  }
+  useEffect(() => {
     fetchPosts()
   }, [])
   return (
     <Wrapper>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchPosts} />}
+      >
         <View style={{ height: 200, position: 'relative' }}>
           <View style={{ backgroundColor: 'skyblue', height: '75%' }}>
             <View style={{ flexDirection: 'row', paddingTop: 10, paddingHorizontal: 6, justifyContent: 'space-between' }}>

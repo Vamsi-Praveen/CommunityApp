@@ -1,16 +1,22 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { AntDesign, Ionicons, MaterialIcons, Octicons } from "react-native-vector-icons"
-import { useSelector } from "react-redux"
-import { updateLikes } from '../services/Post.service'
+import { useSelector, useDispatch } from "react-redux"
+import { updateSavedPosts, updateLikes } from '../services/Post.service'
+import { addLike, removeLike } from '../redux/postSlice'
 
 const PostCard = ({ border, data }) => {
     const navigation = useNavigation()
     const userId = useSelector((state) => state.auth.userId)
+    const details = useSelector((state) => state.auth.details)
+    const dispatch = useDispatch()
     const [likes, setLikes] = useState({
         likes: data?.likes?.length,
         isLiked: data?.likes?.includes(userId) ? true : false
+    })
+    const [saved, setSaved] = useState({
+        isSaved: details?.savedPosts?.includes(userId) ? true : false
     })
     const handleLikes = async (isLiked) => {
         setLikes({
@@ -18,23 +24,40 @@ const PostCard = ({ border, data }) => {
             isLiked: !likes.isLiked
         })
         if (isLiked) {
+            // dispatch(addLike({ postId: data.id, userID: userId }))
             data?.likes?.push(userId)
         }
         else {
+            // dispatch(removeLike({ postId: data.id, userID: userId }))
             data?.likes?.splice(data?.likes?.indexOf(userId), 1)
         }
 
         await updateLikes(data?.likes, data.id)
+    }
+    const [savedDetails, setSavedDetails] = useState(details?.savedPosts)
+    const handleSaved = async (isSaved, postId) => {
+        setSaved((prevState) => ({
+            isSaved: !prevState.isSaved
+        }));
+        const updatedSavedPosts = [...savedDetails]
+        if (isSaved) {
+            updatedSavedPosts.push(postId)
+        }
+        else {
+            updatedSavedPosts?.splice(updatedSavedPosts?.indexOf(postId), 1)
+        }
+        setSavedDetails(updateSavedPosts)
+        await updateSavedPosts(userId, updatedSavedPosts)
     }
     return (
         <View style={[styles.container, border && styles.border]}>
             <View style={{ flexDirection: 'row', gap: 15 }}>
                 <View>
                     {
-                        data?.avatar ? (<TouchableOpacity onPress={() => { navigation.navigate('UserProfile', { userId: data?.userId }) }}>
+                        data?.avatar ? (<TouchableOpacity onPress={() => { data?.userId === userId ? navigation.navigate('Profile') : navigation.navigate('UserProfile', { userId: data?.userId }) }}>
                             <Image source={{ uri: data?.avatar }} style={styles.avatar} />
                         </TouchableOpacity>) : (
-                            <TouchableOpacity onPress={() => { navigation.navigate('UserProfile', { userId: userId }) }}>
+                            <TouchableOpacity onPress={() => { data?.userId === userId ? navigation.navigate('Profile') : navigation.navigate('UserProfile', { userId: data?.userId }) }}>
                                 <View style={[styles.avatar, { alignItems: 'center', justifyContent: 'center', backgroundColor: 'skyblue' }]}>
                                     <Text style={{ color: 'black', fontSize: 20, fontFamily: 'DmSans-B' }}>{data?.fullName?.split('')[0]}</Text>
                                 </View>
@@ -83,8 +106,13 @@ const PostCard = ({ border, data }) => {
                             <Ionicons name="chatbubble-outline" color={"#BBBBBB"} size={22} />
                             <Text style={styles.iconText}>0</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.btn}>
-                            <Octicons name="bookmark" color={"#BBBBBB"} size={22} />
+                        <TouchableOpacity style={styles.btn} onPress={() => { handleSaved(!saved.isSaved, data?.id) }}>
+                            {
+                                saved.isSaved ?
+                                    <Octicons name="bookmark-slash" color={"#BBBBBB"} size={22} />
+                                    :
+                                    <Octicons name="bookmark" color={"#BBBBBB"} size={22} />
+                            }
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.btn}>
                             <AntDesign name="retweet" color={"#BBBBBB"} size={22} />

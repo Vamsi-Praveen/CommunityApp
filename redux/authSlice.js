@@ -10,6 +10,7 @@ const authSlice = createSlice({
     reducers: {
         setUser: (state, action) => {
             const { user, details } = action.payload
+            console.log("user logged in is: ", user)
             state.isLoggedIn = true
             state.userId = user
             state.details = details
